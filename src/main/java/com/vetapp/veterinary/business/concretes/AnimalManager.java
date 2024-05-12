@@ -9,7 +9,6 @@ import java.util.List;
 @Service
 public class AnimalManager implements AnimalService {
 
-
     @Override
     public Animal getById(Long id) {
         return null;

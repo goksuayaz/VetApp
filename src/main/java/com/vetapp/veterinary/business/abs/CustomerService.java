@@ -1,5 +1,6 @@
 package com.vetapp.veterinary.business.abs;
 
+import com.vetapp.veterinary.entity.Animal;
 import com.vetapp.veterinary.entity.Customer;
 
 import java.util.List;
@@ -17,4 +18,10 @@ public interface CustomerService {
     List<Customer> findAll();
 
     Customer findByName(String name);
+
+    List<Animal> findAnimalByCustomerId(int id);
+
+
+
+
 }
