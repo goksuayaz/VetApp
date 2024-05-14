@@ -1,5 +1,6 @@
 package com.vetapp.veterinary.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -44,17 +45,13 @@ public class Animal {
     @JoinColumn(name = "customer_id",referencedColumnName = "id")
     private Customer customer;
 
-    @OneToMany(mappedBy = "animal",fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "animal", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Vaccine> vaccineList;
 
-    @OneToMany(mappedBy = "animal",fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "animal", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Appointment> appointmentList;
-
-
-    
-
-
-
 
 
 }

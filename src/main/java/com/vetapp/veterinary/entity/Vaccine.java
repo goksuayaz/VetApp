@@ -27,10 +27,12 @@ public class Vaccine {
     @Column(name = "code")
     private String code;
 
-    @Column(name = "protectionStartDate")
+    @Temporal(TemporalType.DATE)
+    @Column(name = "protectionStartDate", nullable = false)
     private LocalDate protectionStartDate;
 
-    @Column(name = "protectionFinishDate")
+    @Temporal(TemporalType.DATE)
+    @Column(name = "protectionFinishDate", nullable = false)
     private LocalDate protectionFinishDate;
 
     @ManyToOne(fetch = FetchType.EAGER)
@@ -40,6 +42,5 @@ public class Vaccine {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "vaccine_id",referencedColumnName = "id")
     private Vaccine vaccine;
-
 
 }
