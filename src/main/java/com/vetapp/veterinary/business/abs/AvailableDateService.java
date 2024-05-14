@@ -15,4 +15,5 @@ public interface AvailableDateService {
     AvailableDate update(AvailableDate availableDate);
 
     List<AvailableDate> findAll();
+
 }

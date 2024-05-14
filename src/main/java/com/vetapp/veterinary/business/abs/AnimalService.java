@@ -12,14 +12,6 @@ public interface AnimalService {
     String delete(Long id);
     List<Animal> findAll();
 
-    List<Animal> findByCustomerId(Long customer_id);
-
-    List<Animal> findByAnimalId(Long animal_id);
-
-    Animal getByName(String name);
-
-
-
 
 
 }

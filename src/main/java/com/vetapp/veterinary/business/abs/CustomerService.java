@@ -19,9 +19,7 @@ public interface CustomerService {
 
     Customer findByName(String name);
 
-    List<Animal> findAnimalByCustomerId(int id);
-
-
+    List<Animal> findAnimalByCustomerId(Long id);
 
 
 }

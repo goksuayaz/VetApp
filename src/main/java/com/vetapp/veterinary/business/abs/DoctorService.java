@@ -16,9 +16,4 @@ public interface DoctorService {
 
     List<Doctor> findAll();
 
-    Doctor findByName(String name);
-
-
-
-
 }

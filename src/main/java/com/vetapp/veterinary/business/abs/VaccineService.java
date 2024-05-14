@@ -15,6 +15,4 @@ public interface VaccineService {
     Vaccine update(Vaccine vaccine);
 
     List<Vaccine> findAll();
-
-    Vaccine findByName(String name);
 }
