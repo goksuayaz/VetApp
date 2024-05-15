@@ -12,13 +12,17 @@ import java.util.List;
 
 @Service
 public class AnimalManager implements AnimalService {
-
     @Autowired
     private AnimalRepository animalRepository;
 
     @Override
     public Animal getById(Long id) {
-        return null;
+        if (this.animalRepository.findById(id) == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Id yok");
+        } else {
+            return this.animalRepository.findById(id);
+        }
+
     }
 
     @Override
@@ -26,34 +30,36 @@ public class AnimalManager implements AnimalService {
         return this.animalRepository.save(animal);
     }
 
-
     @Override
-    public Animal update(Animal animal) {
-        return null;
+    public String delete(Long id) {
+        if (this.animalRepository.findById(id) == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        } else {
+            this.animalRepository.delete(this.getById(id));
+            return "deleted the record with id: " + id;
+        }
+
     }
 
     @Override
-    public String delete(Long id) {
-        return null;
+    public Animal update(Animal animal) {
+        Animal existingAnimal = animalRepository.findById(animal.getId());
+        if (existingAnimal == null){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }else{
+            existingAnimal.setBirthday(animal.getBirthday());
+            existingAnimal.setColour(animal.getColour());
+            existingAnimal.setBreed(animal.getBreed());
+            existingAnimal.setGender(animal.getGender());
+            existingAnimal.setName(animal.getName());
+            existingAnimal.setSpecies(animal.getSpecies());
+            return animalRepository.save(animal);
+        }
+
     }
 
     @Override
     public List<Animal> findAll() {
-        return null;
-    }
-
-    @Override
-    public List<Animal> findByCustomerId(Long customer_id) {
-        return null;
-    }
-
-    @Override
-    public List<Animal> findByAnimalId(Long animal_id) {
-        return null;
-    }
-
-    @Override
-    public Animal getByName(String name) {
-        return null;
+        return this.animalRepository.findAll();
     }
 }

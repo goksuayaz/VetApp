@@ -9,11 +9,13 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 
-@Entity
-@Table(name = "doctor")
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+
+@Entity
+@Table(name = "doctor")
 
 public class Doctor {
     @Id

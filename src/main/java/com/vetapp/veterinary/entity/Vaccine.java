@@ -8,11 +8,13 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 
 
-@Entity
-@Table(name = "vaccine")
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+
+@Entity
+@Table(name = "vaccine")
 
 public class Vaccine {
 

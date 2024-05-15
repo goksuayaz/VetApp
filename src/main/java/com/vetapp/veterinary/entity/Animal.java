@@ -9,11 +9,13 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 import java.util.List;
 
-@Entity
-@Table(name = "animal")
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+
+@Entity
+@Table(name = "animal")
 
 public class Animal {
 

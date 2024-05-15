@@ -2,6 +2,7 @@ package com.vetapp.veterinary.business.abs;
 
 import com.vetapp.veterinary.entity.Vaccine;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface VaccineService {
@@ -15,4 +16,10 @@ public interface VaccineService {
     Vaccine update(Vaccine vaccine);
 
     List<Vaccine> findAll();
+
+    List<Vaccine> findVaccineByAnimalId(long id);
+
+    List<Vaccine> findAllByPrtStartBetween(LocalDate prt_start, LocalDate prt_finish);
+
+
 }
