@@ -1,6 +1,6 @@
 package com.vetapp.veterinary.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,51 +9,56 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 import java.util.List;
 
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-
 @Entity
-@Table(name = "animal")
-
+@Table(name = "animals")
 public class Animal {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column(name = "animal_id")
     private Long id;
 
-    @Column(name = "name")
+    @Column(name = "animal_name", nullable = false)
     private String name;
 
-    @Column(name = "species")
+    @Column(name = "animal_species", nullable = false)
     private String species;
 
-    @Column(name = "breed")
+    @Column(name = "breed", length = 255)
     private String breed;
 
-    @Column(name = "gender")
-    private String gender;
-
-    @Column(name = "colour")
+    @Column(name = "animal_colour", length = 255)
     private String colour;
 
-    @Temporal(TemporalType.DATE)
-    @Column(name = "birthday")
+    //@Temporal(TemporalType.DATE)
+    @Column(name = "animal_date_of_birth")
     private LocalDate dateOfBirth;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "customer_id",referencedColumnName = "id")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "animal_gender")
+    private Gender gender;
+    public enum Gender {
+        MALE,
+        FEMALE
+    }
+    @ManyToOne
+    @JoinColumn(name = "customer_id")
     private Customer customer;
 
     @OneToMany(mappedBy = "animal", cascade = CascadeType.ALL)
-    @JsonIgnore
-    private List<Vaccine> vaccineList;
+    private List<Vaccine> vaccines;
 
-    @OneToMany(mappedBy = "animal", cascade = CascadeType.ALL)
-    @JsonIgnore
-    private List<Appointment> appointmentList;
+    @OneToMany(mappedBy = "animal",fetch = FetchType.LAZY,cascade = CascadeType.REMOVE)
+    private List<Appointment> appointment;
+
+
+
 
 
 }
+
+
+
+

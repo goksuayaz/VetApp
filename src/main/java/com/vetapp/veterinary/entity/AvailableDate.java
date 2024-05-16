@@ -7,27 +7,22 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-
 @Entity
-@Table(name = "availableDate")
-
+@Table(name = "availableDates")
 public class AvailableDate {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column(name = "availableDate_id")
     private Long id;
 
-    @Temporal(TemporalType.DATE)
-    @Column(name = "availableDays", nullable = false)
-    private LocalDate availableDays;
+    @Column(name = "available_date")
+    private LocalDate availableDate;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "doctor_id", referencedColumnName = "id")
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @JoinColumn(name = "availableDate_doctor_id", referencedColumnName = "doctor_id")
     private Doctor doctor;
 
 }

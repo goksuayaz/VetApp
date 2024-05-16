@@ -9,11 +9,11 @@ import java.util.List;
 
 @Repository
 public interface AppointmentRepository extends JpaRepository<Appointment, Long> {
-    Appointment findById(long id);
+    List<Appointment> findByAnimalId(Long animalId);
 
-    List<Appointment> findByAppointmentDateBetweenAnimalId(LocalDateTime startDate, LocalDateTime finishDate, Long animal_id);
-    List<Appointment> findByAppointmentDateBetweenDoctorId(LocalDateTime startDate, LocalDateTime finishDate, Long animal_id);
-
-    boolean existByDoctorIdAppointmentDate(Long doctorId, LocalDateTime localDateTime);
+    // Doktor ID'sine göre randevuları bulma
+    List<Appointment> findByDoctorId(Long doctorId);
+    List<Appointment> findByAppointmentDateTimeBetween(LocalDateTime startDate, LocalDateTime endDate);
 
 }
+
