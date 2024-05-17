@@ -1,73 +1,96 @@
 package com.vetapp.veterinary.controller;
 
-
-import com.vetapp.veterinary.business.abs.CustomerService;
-import com.vetapp.veterinary.entity.Animal;
+import com.vetapp.veterinary.business.abs.ICustomerService;
+import com.vetapp.veterinary.core.config.modelMapper.IModelMapperService;
+import com.vetapp.veterinary.core.result.Result;
+import com.vetapp.veterinary.core.result.ResultData;
+import com.vetapp.veterinary.core.utilies.ResultHelper;
+import com.vetapp.veterinary.dto.CursorResponse;
+import com.vetapp.veterinary.dto.request.CustomerSaveRequest;
+import com.vetapp.veterinary.dto.request.CustomerUpdateRequest;
+import com.vetapp.veterinary.dto.response.CustomerResponse;
 import com.vetapp.veterinary.entity.Customer;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/customers")
+@RequestMapping("/v1/customers")
+
 public class CustomerController {
 
-    @Autowired
-    private CustomerService customerService;
+    private final ICustomerService customerService;
+    private final IModelMapperService modelMapper;
 
-    @GetMapping("/get")
-    @ResponseStatus(HttpStatus.OK)
-    public List<Customer> findAll(){
-        return this.customerService.findAll();
 
+    public CustomerController(ICustomerService customerService, IModelMapperService modelMapper) {
+        this.customerService = customerService;
+        this.modelMapper = modelMapper;
     }
 
-    @GetMapping("/getById/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    public Customer finByID(@PathVariable("id") long id){
-        return this.customerService.getById(id);
-    }
-
-    @GetMapping("/getByName/{name}")
-    @ResponseStatus(HttpStatus.OK)
-    public Customer findByName(@PathVariable("name") String name){
-        return this.customerService.findByName(name);
-    }
-
-    @GetMapping("/getPets/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    public List<Animal> getPets(@PathVariable("id") long id){
-        return customerService.findAnimalByCustomerId(id);
-    }
-
-    @PostMapping("/add")
+    @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
-    public Customer save(@RequestBody Customer customer){
-        return this.customerService.save(customer);
+    public ResultData<CustomerResponse> save(@Valid @RequestBody CustomerSaveRequest customerSaveRequest ){
+        Customer saveCustomer = this.modelMapper.forRequest().map(customerSaveRequest,Customer.class);
+        this.customerService.save(saveCustomer);
+        return ResultHelper.created(this.modelMapper.forResponse().map(saveCustomer,CustomerResponse.class));
     }
 
-    @PutMapping("/update")
+
+    @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public Customer update(@RequestBody Customer customer){
-        return customerService.save(customer);
+    public ResultData<CustomerResponse> get (@PathVariable("id") long id) {
+        Customer customer = this.customerService.get(id);
+        return ResultHelper.success(this.modelMapper.forResponse().map(customer,CustomerResponse.class));
     }
 
-    @DeleteMapping("/delete/{id}")
-    public String delete(@PathVariable("id") long id){
-        return this.customerService.delete((long) id);
+
+    @PutMapping("/update/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResultData<CustomerResponse> update(@Valid @RequestBody CustomerUpdateRequest customerUpdateRequest ){
+        Customer updateCustomer = this.modelMapper.forRequest().map(customerUpdateRequest,Customer.class);
+        this.customerService.update(updateCustomer);
+        return ResultHelper.success(this.modelMapper.forResponse().map(updateCustomer,CustomerResponse.class));
     }
 
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public Result delete(@PathVariable("id") long id) {
+        this.customerService.delete(id);
+        return ResultHelper.Ok();
+    }
+
+
+    @GetMapping()
+    @ResponseStatus(HttpStatus.OK)
+    public ResultData<CursorResponse<CustomerResponse>> cursor(
+            @RequestParam(name = "page", required = false,defaultValue = "0") int page,
+            @RequestParam(name = "pageSize", required = false,defaultValue = "2") int pageSize
+    ){
+
+        Page<Customer> categoryPage = this.customerService.cursor(page,pageSize);
+        Page<CustomerResponse> customerResponsePage = categoryPage
+                .map(category -> this.modelMapper.forResponse().map(category,CustomerResponse.class));
+
+        return  ResultHelper.cursor(customerResponsePage);
+    }
+
+    @GetMapping("/filter")
+    @ResponseStatus(HttpStatus.OK)
+    public ResultData<List<CustomerResponse>> getCustomersByName(@RequestParam("name") String name) {
+        List<Customer> customers = this.customerService.getCustomersByName(name);
+
+
+        List<CustomerResponse> customerResponses = customers.stream()
+                .map(customer -> this.modelMapper.forResponse().map(customer, CustomerResponse.class))
+                .collect(Collectors.toList());
+
+        return ResultHelper.success(customerResponses);
+    }
 
 }
-
-
-
-
-
-
-
-
-
 

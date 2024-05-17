@@ -1,49 +1,66 @@
 package com.vetapp.veterinary.controller;
 
-import com.vetapp.veterinary.business.abs.DoctorService;
+import com.vetapp.veterinary.business.abs.IDoctorService;
+import com.vetapp.veterinary.core.config.modelMapper.IModelMapperService;
+import com.vetapp.veterinary.core.result.Result;
+import com.vetapp.veterinary.core.result.ResultData;
+import com.vetapp.veterinary.core.utilies.ResultHelper;
+import com.vetapp.veterinary.dto.request.DoctorSaveRequest;
+import com.vetapp.veterinary.dto.request.DoctorUpdateRequest;
+import com.vetapp.veterinary.dto.response.DoctorResponse;
 import com.vetapp.veterinary.entity.Doctor;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
-@RequestMapping("/doctors")
+@RequestMapping("/v1/doctors")
+
 public class DoctorController {
 
-    @Autowired
-    private DoctorService doctorService;
+    private final IDoctorService doctorService;
+    private final IModelMapperService modelMapper;
 
-    @GetMapping("/get")
-    @ResponseStatus(HttpStatus.OK)
-    public List<Doctor> findAll(){
-        return this.doctorService.findAll();
 
+    public DoctorController(IDoctorService doctorService, IModelMapperService modelMapper) {
+        this.doctorService = doctorService;
+        this.modelMapper = modelMapper;
     }
 
-    @GetMapping("/getById/{id}")
+
+    @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public Doctor finByID(@PathVariable("id") long id) {
-        return this.doctorService.getById(id);
+    public ResultData<DoctorResponse> get (@PathVariable("id") Long id) {
+        Doctor doctor = this.doctorService.get(id);
+        return ResultHelper.success(this.modelMapper.forResponse().map(doctor,DoctorResponse.class));
     }
 
-    @PostMapping("/add")
+
+    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Doctor save(@RequestBody Doctor doctor) {
-        return this.doctorService.save(doctor);
+    public ResultData<DoctorResponse> save(@Valid @RequestBody DoctorSaveRequest doctorSaveRequest ){
+        Doctor saveDoctor = this.modelMapper.forRequest().map(doctorSaveRequest,Doctor.class);
+        this.doctorService.save(saveDoctor);
+        return ResultHelper.created(this.modelMapper.forResponse().map(saveDoctor,DoctorResponse.class));
     }
 
-    @PutMapping("/update")
+
+    @PutMapping("/update/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public Doctor update(@RequestBody Doctor doctor) {
-        return doctorService.save(doctor);
+    public ResultData<DoctorResponse> update(@Valid @RequestBody DoctorUpdateRequest doctorUpdateRequest ){
+        Doctor updateDoctor = this.modelMapper.forRequest().map(doctorUpdateRequest, Doctor.class);
+        this.doctorService.update(updateDoctor);
+        return ResultHelper.success(this.modelMapper.forResponse().map(updateDoctor, DoctorResponse.class));
     }
 
-    @DeleteMapping("/delete/{id}")
-    public String delete(@PathVariable("id") long id) {
-        return this.doctorService.delete(id);
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public Result delete(@PathVariable("id") Long id) {
+        this.doctorService.delete(id);
+        return ResultHelper.Ok();
     }
+
 }
-
 

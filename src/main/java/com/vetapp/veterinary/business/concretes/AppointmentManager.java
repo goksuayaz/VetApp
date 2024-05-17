@@ -1,93 +1,78 @@
 package com.vetapp.veterinary.business.concretes;
 
-import com.vetapp.veterinary.business.abs.AppointmentService;
+import com.vetapp.veterinary.business.abs.IAppointmentService;
+import com.vetapp.veterinary.core.config.exception.NotFoundException;
+import com.vetapp.veterinary.core.utilies.Msg;
 import com.vetapp.veterinary.entity.Appointment;
-import com.vetapp.veterinary.entity.AvailableDate;
 import com.vetapp.veterinary.repository.AppointmentRepository;
-import com.vetapp.veterinary.repository.AvailableDateRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
-public class AppointmentManager implements AppointmentService {
+public class AppointmentManager implements IAppointmentService {
 
-    @Autowired
     private AppointmentRepository appointmentRepository;
-    @Autowired
-    private AvailableDateRepository availableDateRepository;
 
-    @Override
-    public Appointment getByID(long id) {
-        if (this.appointmentRepository.findById(id)==null){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }else {
-            return this.appointmentRepository.findById(id);
-        }
+    public AppointmentManager(AppointmentRepository appointmentRepository) {
+        this.appointmentRepository = appointmentRepository;
     }
 
     @Override
     public Appointment save(Appointment appointment) {
-        LocalDateTime appointmentDate = appointment.getAppointmentDate();
-        Long doctorID = appointment.getDoctor().getId();
-        AvailableDate availableDate = availableDateRepository.findByDoctorIdAndAvailableDays(doctorID,appointmentDate.toLocalDate());
-
-        if (availableDate != null && isApointmentExistsOnDate(doctorID,appointmentDate)){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-            //throw new IllegalStateException("Doctor is not available!");
-        }else {
-            return this.appointmentRepository.save(appointment);
-        }
+        return appointmentRepository.save(appointment);
     }
+
 
     @Override
-    public String delete(long id) {
-        if (this.appointmentRepository.findById(id) == null){
-            throw  new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }else {
-            this.appointmentRepository.delete(this.getByID(id));
-            return "deleted the record with id: " + id;
-        }
+    public Appointment get(Long id) {
+        return this.appointmentRepository.findById(id).orElseThrow(() -> new NotFoundException(Msg.NOT_FOUND));
     }
+
+
+    @Override
+    public Page<Appointment> cursor(int page, int pageSize) {
+        return null;
+    }
+
 
     @Override
     public Appointment update(Appointment appointment) {
-        Appointment existingAppointment = appointmentRepository.findById(appointment.getId());
-        if (existingAppointment==null){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }else {
-            existingAppointment.setAppointmentDate(appointment.getAppointmentDate());
-            existingAppointment.setDoctor(appointment.getDoctor());
-            existingAppointment.setAnimal(appointment.getAnimal());
-            return this.appointmentRepository.save(appointment);
+        return null;
+    }
+
+    @Override
+    public boolean delete(long id) {
+        Appointment appointment = this.get(id);
+        this.appointmentRepository.delete(appointment);
+        return true;
+    }
+
+    @Override
+    public List<Appointment> getByDoctorId(Long doctorId) {
+        if (doctorId == null || doctorId <= 0){
+            throw new IllegalArgumentException(Msg.NOT_FOUND);
         }
+        return this.appointmentRepository.findByDoctorId(doctorId);
 
     }
 
     @Override
-    public List<Appointment> findAll() {
-        return this.appointmentRepository.findAll();
+    public List<Appointment> getByAnimalId(Long animalId) {
+        if (animalId == null || animalId <= 0){
+            throw new IllegalArgumentException(Msg.NOT_FOUND);
+        }
+        return this.appointmentRepository.findByAnimalId(animalId);
     }
+
 
     @Override
-    public List<Appointment> findByAnimalIdBetweenDates(LocalDateTime startDate, LocalDateTime endDate, Long animal_id) {
-        return this.appointmentRepository.findByAppointmentDateBetweenAnimalId(startDate,endDate,animal_id);
+    public List<Appointment> getAppointmentsByDateRange(String startDate, String endDate) {
+        LocalDateTime startDateTime = LocalDateTime.parse(startDate);
+        LocalDateTime endDateTime = LocalDateTime.parse(endDate);
+        List<Appointment> appointments = appointmentRepository.findByAppointmentDateTimeBetween(startDateTime, endDateTime);
+        return appointments;
     }
-
-    @Override
-    public List<Appointment> findByDoctorIdBetweenDates(LocalDateTime startDate, LocalDateTime endDate, Long doctor_id) {
-        return this.appointmentRepository.findByAppointmentDateBetweenDoctorId(startDate,endDate,doctor_id);
-    }
-
-    private boolean isApointmentExistsOnDate(Long doctorId,LocalDateTime appointmentDate){
-        return  appointmentRepository.existByDoctorIdAppointmentDate(doctorId,appointmentDate);
-    }
-
-
 }
-
-

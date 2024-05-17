@@ -1,63 +1,59 @@
 package com.vetapp.veterinary.business.concretes;
 
-import com.vetapp.veterinary.business.abs.DoctorService;
+import com.vetapp.veterinary.business.abs.IDoctorService;
+import com.vetapp.veterinary.core.config.exception.NotFoundException;
+import com.vetapp.veterinary.core.utilies.Msg;
 import com.vetapp.veterinary.entity.Doctor;
-import org.springframework.http.HttpStatus;
+import com.vetapp.veterinary.repository.DoctorRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
-
-import java.util.List;
 
 @Service
-public class DoctorManager implements DoctorService {
+public class DoctorManager implements IDoctorService {
 
-    @Autowired
-    private DoctorRepository doctorRepository;
-    @Override
-    public Doctor getByID(long id) {
-        if (this.doctorRepository.findById(id) == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        } else {
-            return this.doctorRepository.findById(id);
-        }
+    private final DoctorRepository doctorRepository;
+
+    // Constructor enjeksiyonu
+    public DoctorManager(DoctorRepository doctorRepository) {
+        this.doctorRepository = doctorRepository;
     }
+
 
     @Override
     public Doctor save(Doctor doctor) {
-        return this.doctorRepository.save(doctor);
+        return this.doctorRepository.save(doctor); // DoctorRepo'nun save metodu kullanılır
     }
 
+
     @Override
-    public String delete(long id) {
-        if (this.doctorRepository.findById(id) == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        } else {
-            this.doctorRepository.delete(this.getByID(id));
-            return "deleted the record with id: " + id;
-        }
+    public Doctor get(Long id) {
+
+        return this.doctorRepository.findById(id).orElseThrow(()-> new NotFoundException(Msg.NOT_FOUND));
     }
+
+
+    @Override
+    public Page<Doctor> cursor(int page, int pageSize) {
+
+        Pageable pageable = PageRequest.of(page,pageSize);
+        return this.doctorRepository.findAll(pageable);
+    }
+
 
     @Override
     public Doctor update(Doctor doctor) {
-        Doctor existingDoctor = doctorRepository.findById(doctor.getId());
-        if (existingDoctor==null){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }else {
-            existingDoctor.setName(doctor.getName());
-            existingDoctor.setCity(doctor.getCity());
-            existingDoctor.setAddress(doctor.getAddress());
-            existingDoctor.setMail(doctor.getMail());
-            existingDoctor.setPhone(doctor.getPhone());
-            return this.doctorRepository.save(doctor);
-        }
-
+        this.get(doctor.getId());
+        return this.doctorRepository.save(doctor);
     }
+
 
     @Override
-    public List<Doctor> findAll() {
-        return this.doctorRepository.findAll();
+    public boolean delete(long id) {
+        Doctor doctor=this.get(id);
+        this.doctorRepository.delete(doctor);
+        return true;
     }
 }
 
-
-}

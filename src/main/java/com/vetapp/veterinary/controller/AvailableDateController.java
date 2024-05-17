@@ -1,50 +1,55 @@
 package com.vetapp.veterinary.controller;
 
-
-import com.vetapp.veterinary.business.abs.AvailableDateService;
+import com.vetapp.veterinary.business.abs.IAvailableDateService;
+import com.vetapp.veterinary.business.abs.IDoctorService;
+import com.vetapp.veterinary.core.config.modelMapper.IModelMapperService;
+import com.vetapp.veterinary.core.result.ResultData;
+import com.vetapp.veterinary.core.utilies.ResultHelper;
+import com.vetapp.veterinary.dto.request.AvailableDateSaveRequest;
+import com.vetapp.veterinary.dto.response.AvailableDateResponse;
 import com.vetapp.veterinary.entity.AvailableDate;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.vetapp.veterinary.entity.Doctor;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
-@RequestMapping("/availables")
+@RequestMapping("/v1/available-dates")
+
+
 public class AvailableDateController {
 
-    @Autowired
-    private AvailableDateService availableDateService;
+    private  final IAvailableDateService availableDateService;
+    private final IDoctorService doctorService;
+    private final IModelMapperService modelMapper;
 
-    @GetMapping("/get")
-    @ResponseStatus(HttpStatus.OK)
-    public List<AvailableDate> findAll(){
-        return this.availableDateService.findAll();
+    public AvailableDateController(IAvailableDateService availableDateService,
+                                   IDoctorService doctorService,
+                                   IModelMapperService modelMapper) {
+        this.availableDateService = availableDateService;
+        this.doctorService = doctorService;
+        this.modelMapper = modelMapper;
     }
 
-    @GetMapping("/getById/{id}")
+    @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public AvailableDate finByID(@PathVariable("id") long id) {
-        return this.availableDateService.getById(id);
+    public ResultData<AvailableDateResponse> get (@PathVariable("id") Long id) {
+        AvailableDate availableDate = this.availableDateService.get(id);
+        return ResultHelper.success(this.modelMapper.forResponse().map(availableDate,AvailableDateResponse.class));
     }
 
-    @PostMapping("/add")
+    @PostMapping("/createdNew")
     @ResponseStatus(HttpStatus.CREATED)
-    public AvailableDate save(@RequestBody AvailableDate availableDate) {
-        return this.availableDateService.save(availableDate);
+    public ResultData<AvailableDateResponse> save(@Valid @RequestBody AvailableDateSaveRequest availableDateSaveRequest ){
+
+        AvailableDate saveAvailableDate = this.modelMapper.forRequest().map(availableDateSaveRequest,AvailableDate.class);
+
+        Doctor doctor =this.doctorService.get(availableDateSaveRequest.getDoctorId());
+        saveAvailableDate.setDoctor(doctor);
+
+        this.availableDateService.save(saveAvailableDate);
+        return ResultHelper.created(this.modelMapper.forResponse().map(saveAvailableDate, AvailableDateResponse.class));
     }
-
-    @PutMapping("/update")
-    @ResponseStatus(HttpStatus.OK)
-    public AvailableDate update(@RequestBody AvailableDate doctorAvailability) {
-        return availableDateService.save(doctorAvailability);
-    }
-
-    @DeleteMapping("/delete/{id}")
-    public String delete(@PathVariable("id") long id) {
-        return this.availableDateService.delete(id);
-    }
-
-
-
 }
+

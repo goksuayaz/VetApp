@@ -1,92 +1,120 @@
 package com.vetapp.veterinary.business.concretes;
 
-import com.vetapp.veterinary.business.abs.VaccineService;
+import com.vetapp.veterinary.business.abs.IVaccineService;
+import com.vetapp.veterinary.core.config.exception.NotFoundException;
+import com.vetapp.veterinary.core.utilies.Msg;
+import com.vetapp.veterinary.entity.Animal;
 import com.vetapp.veterinary.entity.Vaccine;
+import com.vetapp.veterinary.repository.AnimalRepository;
 import com.vetapp.veterinary.repository.VaccineRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
-import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 @Service
-public class VaccineManager implements VaccineService {
+public class VaccineManager implements IVaccineService {
 
-    @Autowired
-    private VaccineRepository vaccineRepository;
+    private final VaccineRepository vaccineRepository;
 
-    @Override
-    public Vaccine getById(Long id) {
-        if (this.vaccineRepository.findById(id)==null){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }else {
-            return this.vaccineRepository.findById(id);
-        }
+    private final AnimalRepository animalRepository;
+
+    public VaccineManager(VaccineRepository vaccineRepository, AnimalRepository animalRepository) {
+        this.vaccineRepository = vaccineRepository;
+        this.animalRepository = animalRepository;
     }
 
-
-
-    @Override
-    public Vaccine save(Vaccine vaccine) {
-        Long animalID = vaccine.getAnimal().getId();
-        Long vaccineID = vaccine.getVaccine().getId();
-        Vaccine oldVaccine = vaccineRepository.findByVaccine(animalID,vaccineID);
-
-        if (oldVaccine != null && oldVaccine.getPrtFinish().isAfter(vaccine.getPrtStart())){
-            throw  new ResponseStatusException(HttpStatus.CONFLICT);
-        }
-
+    /*@Override
+    public Vaccine save(Vaccine vaccine, Long animalId) {
+        log.info("vaccine : {},animalId : {}",vaccine,animalId);
+        Animal animal = animalRepository.findById(animalId)
+                .orElseThrow(() -> new NotFoundException(Msg.NOT_FOUND));
+        vaccine.setAnimal(animal);
+        log.info("animal : {}",animal);
         return vaccineRepository.save(vaccine);
     }
+    */
+
 
     @Override
-    public String delete(Long id) {
-        if (this.vaccineRepository.findById(id)==null){
-            throw  new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }else {
-            this.vaccineRepository.delete(this.getById(id));
-            return "deleted the record with id: " + id;
-        }
+    public Vaccine save(Vaccine vaccine, Long animalId) {
+        return null;
     }
+
+
+    @Override
+    public Vaccine get(Long id) {
+        return this.vaccineRepository.findById(id).orElseThrow(()-> new NotFoundException(Msg.NOT_FOUND));
+    }
+
+
+    @Override
+    public Page<Vaccine> cursor(int page, int pageSize) {
+        Pageable pageable = PageRequest.of(page,pageSize);
+        return this.vaccineRepository.findAll(pageable);
+    }
+
 
     @Override
     public Vaccine update(Vaccine vaccine) {
-        Vaccine existingVaccine = vaccineRepository.findById((int) Vaccine.getId());
-        if (existingVaccine == null){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }else {
-            existingVaccine.setPrtStart(vaccine.getPrtStart());
-            existingVaccine.setPrtFinish(vaccine.getPrtFinish());
-            return this.vaccineRepository.save(vaccine);
+        this.get(vaccine.getId());
+        return this.vaccineRepository.save(vaccine);
+    }
+
+
+    @Override
+    public boolean delete(long id) {
+        Vaccine vaccine = this.get(id);
+        this.vaccineRepository.delete(vaccine);
+        return true;
+    }
+
+
+    @Override
+    public List<Vaccine> getVaccinesByAnimalId(Long animalId) {
+        return vaccineRepository.findByAnimalId(animalId);
+    }
+
+    @Override
+    public List<Vaccine> getVaccinesByDateRangeForAnimal(Long animalId, LocalDate startDate, LocalDate endDate) {
+        return vaccineRepository.findByAnimalIdAndProtectionStartDateBetween(animalId,startDate,endDate);
+    }
+
+    @Override
+    public List<Vaccine> getVaccinesByDateRange(LocalDate startDate, LocalDate endDate) {
+        return vaccineRepository.findByProtectionStartDateBetween(startDate, endDate);
+    }
+
+    @Override
+    public List<Vaccine> getByProtectionStartDateBetween(LocalDate startDate, LocalDate endDate) {
+        Objects.requireNonNull(startDate,Msg.NOT_FOUND);
+        Objects.requireNonNull(endDate, Msg.NOT_FOUND);
+
+        if (startDate.isAfter(endDate)) {
+            throw new IllegalArgumentException(Msg.HISTORY_CONTROLLER);
         }
 
+        return vaccineRepository.findByProtectionStartDateBetween(startDate, endDate);
+
     }
 
     @Override
-    public List<Vaccine> findAll() {
-        return this.vaccineRepository.findAll();
-    }
+    public List<Vaccine> findByAnimalIdAndProtectionStartDateBetween(Long animalId, LocalDate startDate, LocalDate endDate) {
+        Objects.requireNonNull(animalId, Msg.NOT_FOUND);
+        Objects.requireNonNull(startDate, Msg.NOT_FOUND);
+        Objects.requireNonNull(endDate, Msg.NOT_FOUND);
 
-    @Override
-    public List<Vaccine> findVaccineByAnimalId(Long id) {
-        Vaccine vaccine = vaccineRepository.findById(id);
-        if (vaccine!=null){
-            return vaccine.getAnimal().getVaccineList();
-        }else {
-            return Collections.emptyList();
+        if (startDate.isAfter(endDate)) {
+            throw new IllegalArgumentException(Msg.HISTORY_CONTROLLER);
         }
-    }
+        return vaccineRepository.findByAnimalIdAndProtectionStartDateBetween(animalId, startDate, endDate);
 
-    @Override
-    public List<Vaccine> findAllByPrtStartBetween(LocalDate prt_start, LocalDate prt_finish) {
-        return vaccineRepository.findAllByPrtStartBetween(prt_start,prt_finish);
     }
 
 
 }
 
-
-}

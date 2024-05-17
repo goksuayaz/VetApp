@@ -1,77 +1,90 @@
 package com.vetapp.veterinary.controller;
 
-
-import com.vetapp.veterinary.business.abs.AppointmentService;
-import com.vetapp.veterinary.business.abs.AppointmentService;
+import com.vetapp.veterinary.business.abs.IAppointmentService;
+import com.vetapp.veterinary.core.config.modelMapper.IModelMapperService;
+import com.vetapp.veterinary.core.result.ResultData;
+import com.vetapp.veterinary.core.utilies.ResultHelper;
+import com.vetapp.veterinary.dto.request.AppointmentSaveRequest;
+import com.vetapp.veterinary.dto.response.AppointmentResponse;
 import com.vetapp.veterinary.entity.Appointment;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
+
 
 @RestController
-@RequestMapping("/appointments")
+@RequestMapping("/v1/appointments")
+
 public class AppointmentController {
 
-    @Autowired
-    private AppointmentService appointmentService;
+    private final IAppointmentService appointmentService;
+    private final IModelMapperService modelMapper;
 
-    @GetMapping("/get")
-    @ResponseStatus(HttpStatus.OK)
-    public List<Appointment> findAll(){
-        return this.appointmentService.findAll();
-
+    public AppointmentController(IAppointmentService appointmentService, IModelMapperService modelMapper) {
+        this.appointmentService = appointmentService;
+        this.modelMapper = modelMapper;
     }
 
-    @GetMapping("/getById/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    public Appointment finByID(@PathVariable("id") long id) {
-        return this.appointmentService.getById(id);
+
+    @GetMapping("/filter/doctor/{doctorId}")
+    public ResultData<List<AppointmentResponse>> getAppointmentsByDoctorId(@PathVariable("doctorId") long doctorId) {
+
+        List<Appointment> appointments = appointmentService.getByDoctorId(doctorId);
+
+        List<AppointmentResponse> appointmentResponses = appointments.stream()
+                .map(appointment -> modelMapper.forResponse().map(appointment, AppointmentResponse.class))
+                .collect(Collectors.toList());
+        return ResultHelper.success(appointmentResponses);
     }
 
-    @GetMapping("/getByAnimalIdBetween")
-    @ResponseStatus(HttpStatus.OK)
-    public List<Appointment> listApoByAnimalIdBetween(
-            @RequestParam("startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
-            @RequestParam("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd")LocalDate endDate,
-            @RequestParam("animalId") long id){
 
-        LocalDateTime startDateTime = startDate.atStartOfDay();
-        LocalDateTime endDateTime = endDate.atTime(23,59,59);
-        return appointmentService.findByAnimalIdBetweenDates(startDateTime,endDateTime,id);
+    @GetMapping("/filter/animal/{animalId}")
+    public ResultData<List<AppointmentResponse>> getAppointmentsByAnimalId(@PathVariable("animalId") long animalId) {
+
+        List<Appointment> appointments = appointmentService.getByAnimalId(animalId);
+
+        List<AppointmentResponse> appointmentResponses = appointments.stream()
+                .map(appointment -> modelMapper.forResponse().map(appointment, AppointmentResponse.class))
+                .collect(Collectors.toList());
+        return ResultHelper.success(appointmentResponses);
     }
 
-    @GetMapping("/getByDoctorIdBetween")
-    @ResponseStatus(HttpStatus.OK)
-    public List<Appointment> listApoByDoctorIdBetween(
-            @RequestParam("startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
-            @RequestParam("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate,
-            @RequestParam("animalId") long id){
-        LocalDateTime startDateTime = startDate.atStartOfDay();
-        LocalDateTime endDateTime = endDate.atTime(23,59,59);
-        return appointmentService.findByDoctorIdBetweenDates(startDateTime,endDateTime,id);
-    }
 
-    @PostMapping("/add")
+    @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
-    public Appointment save(@RequestBody Appointment appointment) {
-        return this.appointmentService.save(appointment);
+    public ResultData<AppointmentResponse> save(@Valid @RequestBody AppointmentSaveRequest appointmentSaveRequest ){
+        // Converts AppointmentSaveRequest to Appointment class and saves it
+        Appointment saveAppointment = this.modelMapper.forRequest().map(appointmentSaveRequest,Appointment.class);
+        this.appointmentService.save(saveAppointment);
+        return ResultHelper.created(this.modelMapper.forResponse().map(saveAppointment,AppointmentResponse.class));
     }
 
-    @PutMapping("/update")
+
+    @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public Appointment update(@RequestBody Appointment appointment) {
-        return appointmentService.save(appointment);
+    public ResultData<AppointmentResponse> get (@PathVariable("id") Long id) {
+
+        Appointment appointment = this.appointmentService.get(id);
+        return ResultHelper.success(this.modelMapper.forResponse().map(appointment,AppointmentResponse.class));
     }
 
-    @DeleteMapping("/delete/{id}")
-    public String delete(@PathVariable("id") long id) {
-        return this.appointmentService.delete(id);
+
+    @GetMapping("/filter/date")
+    public ResultData<List<AppointmentResponse>> getAppointmentsByDateRange(
+            @RequestParam("startDate") String startDate,
+            @RequestParam("endDate") String endDate) {
+
+        List<Appointment> appointments = appointmentService.getAppointmentsByDateRange(startDate, endDate);
+
+        List<AppointmentResponse> appointmentResponses = appointments.stream()
+                .map(appointment -> modelMapper.forResponse().map(appointment, AppointmentResponse.class))
+                .collect(Collectors.toList());
+        return ResultHelper.success(appointmentResponses);
     }
+
+
 }
-
 
