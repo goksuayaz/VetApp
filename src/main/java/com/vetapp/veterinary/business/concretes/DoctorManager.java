@@ -15,7 +15,7 @@ public class DoctorManager implements IDoctorService {
 
     private final DoctorRepository doctorRepository;
 
-    // Constructor enjeksiyonu
+
     public DoctorManager(DoctorRepository doctorRepository) {
         this.doctorRepository = doctorRepository;
     }
@@ -23,7 +23,7 @@ public class DoctorManager implements IDoctorService {
 
     @Override
     public Doctor save(Doctor doctor) {
-        return this.doctorRepository.save(doctor); // DoctorRepo'nun save metodu kullanılır
+        return this.doctorRepository.save(doctor);
     }
 
 

@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class AppointmentResponse {
 
+    private Long id;
     private LocalDateTime appointmentDateTime;
     private long doctorId;
     private long animalId;

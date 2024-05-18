@@ -34,11 +34,4 @@ public class Appointment {
     private Animal animal;
 
 
-    @Override
-    public String toString() {
-        return "Appointment{" +
-                "id=" + id +
-                ", appointmentDateTime=" + appointmentDateTime  +
-                '}';
-    }
 }
