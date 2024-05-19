@@ -28,21 +28,10 @@ public class VaccineManager implements IVaccineService {
         this.animalRepository = animalRepository;
     }
 
-    /*@Override
-    public Vaccine save(Vaccine vaccine, Long animalId) {
-        log.info("vaccine : {},animalId : {}",vaccine,animalId);
-        Animal animal = animalRepository.findById(animalId)
-                .orElseThrow(() -> new NotFoundException(Msg.NOT_FOUND));
-        vaccine.setAnimal(animal);
-        log.info("animal : {}",animal);
-        return vaccineRepository.save(vaccine);
-    }
-    */
-
 
     @Override
     public Vaccine save(Vaccine vaccine, Long animalId) {
-        return null;
+        return this.vaccineRepository.save(vaccine);
     }
 
 
