@@ -13,12 +13,15 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class DoctorUpdateRequest {
 
-    @Positive(message = "ID Değeri pozitif olmak zorunda")
+    @Positive(message = "Doctor id must be positive")
+    @NotNull(message = "Doctor id can not be null")
     private long id;
-    @NotNull(message = "Doktor ismi boş veya null olamaz")
+
+    @NotNull(message = "Doctor name can not be empty or null")
     private String name;
     private String phone;
-    @Email
+
+    @Email(message = "Invalid e-mail format")
     private String mail;
     private String address;
     private String city;

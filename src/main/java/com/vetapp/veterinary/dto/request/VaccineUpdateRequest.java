@@ -14,13 +14,18 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class VaccineUpdateRequest {
 
-    @Positive(message = "ID Değeri pozitif olmak zorunda")
+    @Positive(message = "Vaccine id must be positive")
+    @NotNull(message = "Vaccine id can not be null")
     private Long id;
-    @NotNull(message = "Aşı ismi boş veya null olamaz")
+
+    @NotNull(message = "Vaccine name can not be empty or null")
     private String name;
     private String code;
     private LocalDate protectionStartDate;
     private LocalDate protectionFinishDate;
+
+    @NotNull(message = "Animal id can not be null")
+    @Positive(message = "Animal id must be positive")
     private Long animalId;
 }
 

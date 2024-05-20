@@ -29,7 +29,7 @@ public class Animal {
     @Column(name = "breed", length = 255)
     private String breed;
 
-    @Column(name = "animal_colour", length = 255)
+    @Column(name = "animal_colour", length = 55)
     private String colour;
 
     //@Temporal(TemporalType.DATE)
@@ -51,7 +51,7 @@ public class Animal {
     private List<Vaccine> vaccines;
 
     @OneToMany(mappedBy = "animal",fetch = FetchType.LAZY,cascade = CascadeType.REMOVE)
-    private List<Appointment> appointment;
+    private List<Appointment> appointments;
 
 
 

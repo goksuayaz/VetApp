@@ -13,6 +13,7 @@ import java.util.List;
 @Entity
 @Table(name = "customers")
 public class Customer {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "customer_id")
@@ -30,7 +31,7 @@ public class Customer {
     @Column(name = "customer_address", length = 255)
     private String address;
 
-    @Column(name = "customer_city", length = 255)
+    @Column(name = "customer_city", length = 55)
     private String city;
 
     @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)

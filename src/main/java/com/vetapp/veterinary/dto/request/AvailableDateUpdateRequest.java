@@ -1,5 +1,6 @@
 package com.vetapp.veterinary.dto.request;
 
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,9 +14,15 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class AvailableDateUpdateRequest {
 
-    @Positive(message = "ID Değeri pozitif olmak zorunda")
+    @Positive(message = "Id must be positive")
+    @NotNull(message = "Id can not be null")
     private long id;
+
+    @NotNull(message = "Available Date can not be empty")
     private LocalDate availableDate;
+
+    @Positive(message = "Doctor id must be positive")
+    @NotNull(message = "Doctor id can not be empty")
     private long doctorId;
 }
 

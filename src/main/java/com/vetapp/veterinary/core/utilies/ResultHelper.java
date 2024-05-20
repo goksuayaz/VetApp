@@ -13,12 +13,12 @@ public class ResultHelper {
     }
 
     public static <T> ResultData<T> validateError(T data) {
-        return new  ResultData<>(false, Msg.VALIDATE_ERROR, "400", data);
+        return new ResultData<>(false, Msg.VALIDATE_ERROR, "400", data);
 
     }
 
     public static <T> ResultData<T> success(T data) {
-        return new  ResultData<>(false, Msg.OK, "209", data);
+        return new  ResultData<>(true, Msg.OK, "200", data);
 
     }
 
@@ -28,6 +28,14 @@ public class ResultHelper {
 
     public static Result notFoundError(String msg) {
         return new  Result (false, msg, "404");
+    }
+
+    public static Result alreadyRegistered(String message) {
+        return new Result(false, message, "500");
+    }
+
+    public static Result errorMessage(String message) {
+        return new Result(false, message, "400");
     }
     public static <T> ResultData<CursorResponse<T>> cursor (Page<T> pageData) {
         CursorResponse<T> cursor = new CursorResponse<>();

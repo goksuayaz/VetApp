@@ -6,14 +6,17 @@ import com.vetapp.veterinary.core.config.modelMapper.IModelMapperService;
 import com.vetapp.veterinary.core.result.Result;
 import com.vetapp.veterinary.core.result.ResultData;
 import com.vetapp.veterinary.core.utilies.ResultHelper;
+import com.vetapp.veterinary.dto.CursorResponse;
 import com.vetapp.veterinary.dto.request.AnimalSaveRequest;
 import com.vetapp.veterinary.dto.request.AnimalUpdateRequest;
 import com.vetapp.veterinary.dto.response.AnimalResponse;
+import com.vetapp.veterinary.dto.response.CustomerResponse;
 import com.vetapp.veterinary.dto.response.VaccineResponse;
 import com.vetapp.veterinary.entity.Animal;
 import com.vetapp.veterinary.entity.Customer;
 import com.vetapp.veterinary.entity.Vaccine;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -59,6 +62,8 @@ public class AnimalController {
         this.animalService.save(saveAnimal);
         return ResultHelper.created(this.modelMapper.forResponse().map(saveAnimal,AnimalResponse.class));
     }
+
+
 
 
     @PutMapping("/update/{id}")
@@ -116,5 +121,20 @@ public class AnimalController {
 
         return ResultHelper.success(animalResponses);
     }
+
+    @GetMapping()
+    @ResponseStatus(HttpStatus.OK)
+    public ResultData<CursorResponse<AnimalResponse>> cursor(
+            @RequestParam(name = "page", required = false,defaultValue = "0") int page,
+            @RequestParam(name = "pageSize", required = false,defaultValue = "2") int pageSize
+    ){
+
+        Page<Animal> animalPage = this.animalService.cursor(page,pageSize);
+        Page<AnimalResponse> animalResponsePage = animalPage.map(animal -> this.modelMapper.forResponse().map(animal,AnimalResponse.class));
+
+        return  ResultHelper.cursor(animalResponsePage);
+    }
+
+
 }
 

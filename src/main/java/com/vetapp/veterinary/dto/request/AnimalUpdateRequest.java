@@ -14,14 +14,18 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class AnimalUpdateRequest {
 
-    @Positive(message = "ID Değeri pozitif olmak zorunda")
+    @NotNull(message = "Animal id can not be null")
+    @Positive(message = "Animal Id must be positive")
     private long id;
-    @NotNull(message = "Hayvan ismi boş veya null olamaz")
+    @NotNull(message = "Animal name can not be empty")
+    private String name;
     private String species;
     private String breed;
     private String gender;
     private String colour;
     private LocalDate dateOfBirth;
-    private long customerId;
+    @NotNull(message = "Customer id can not be empty or null")
+    @Positive(message = "Customer id must be positive")
+    private Long customerId;
 }
 

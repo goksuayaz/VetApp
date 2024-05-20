@@ -32,7 +32,7 @@ public class Doctor {
     @Column(name = "doctor_address", length = 255)
     private String address;
 
-    @Column(name = "doctor_city", length = 255)
+    @Column(name = "doctor_city", length = 55)
     private String city;
 
 
