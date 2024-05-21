@@ -74,6 +74,7 @@ public class VaccineController {
     }
 
 
+    //Fetching vaccination records from a specific date range
     @GetMapping("/date-range")
     @ResponseStatus(HttpStatus.OK)
     public ResultData<List<VaccineResponse>> getVaccinesByDateRange(

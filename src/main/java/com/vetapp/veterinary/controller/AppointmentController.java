@@ -29,6 +29,7 @@ public class AppointmentController {
     }
 
 
+    //Endpoint that retrieves appointments by Doctor ID
     @GetMapping("/filter/doctor/{doctorId}")
     public ResultData<List<AppointmentResponse>> getAppointmentsByDoctorId(@PathVariable("doctorId") long doctorId) {
 
@@ -41,6 +42,7 @@ public class AppointmentController {
     }
 
 
+    //Endpoint that retrieves appointments by Animal ID
     @GetMapping("/filter/animal/{animalId}")
     public ResultData<List<AppointmentResponse>> getAppointmentsByAnimalId(@PathVariable("animalId") long animalId) {
 
@@ -53,6 +55,7 @@ public class AppointmentController {
     }
 
 
+    // Endpoint that creates a new appointment record
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
     public ResultData<AppointmentResponse> save(@Valid @RequestBody AppointmentSaveRequest appointmentSaveRequest ){
@@ -72,6 +75,7 @@ public class AppointmentController {
     }
 
 
+    //Endpoint that retrieves appointments within a specific date range
     @GetMapping("/filter/date")
     public ResultData<List<AppointmentResponse>> getAppointmentsByDateRange(
             @RequestParam("startDate") String startDate,

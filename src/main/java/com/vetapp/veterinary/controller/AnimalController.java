@@ -43,6 +43,7 @@ public class AnimalController {
     }
 
 
+    //endpoint that retrieves details of a specific animal
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public ResultData<AnimalResponse> get (@PathVariable("id") Long id) {
@@ -51,6 +52,7 @@ public class AnimalController {
     }
 
 
+    //Adding a new animal endpoint
     @PostMapping("/createdNew")
     @ResponseStatus(HttpStatus.CREATED)
     public ResultData<AnimalResponse> save(@Valid @RequestBody AnimalSaveRequest animalSaveRequest ){
@@ -66,6 +68,7 @@ public class AnimalController {
 
 
 
+    //Animal update endpoint
     @PutMapping("/update/{id}")
     @ResponseStatus(HttpStatus.OK)
     public ResultData<AnimalResponse> update(@Valid @RequestBody AnimalUpdateRequest animalUpdateRequest ){
@@ -75,6 +78,7 @@ public class AnimalController {
     }
 
 
+    //Animal delete endpoint
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public Result delete(@PathVariable("id") Long id) {
@@ -82,6 +86,7 @@ public class AnimalController {
         return ResultHelper.Ok();
     }
 
+    //Endpoint that fetches the animal's vaccines
     @GetMapping("/{id}/vaccines")
     @ResponseStatus(HttpStatus.OK)
     public ResultData<List<VaccineResponse>> getVaccinesForAnimal(@PathVariable("id") Long id) {

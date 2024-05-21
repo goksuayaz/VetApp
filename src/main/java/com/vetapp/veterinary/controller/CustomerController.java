@@ -32,6 +32,7 @@ public class CustomerController {
         this.modelMapper = modelMapper;
     }
 
+    //Endpoint to register a new customer
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
     public ResultData<CustomerResponse> save(@Valid @RequestBody CustomerSaveRequest customerSaveRequest ){
@@ -65,6 +66,7 @@ public class CustomerController {
     }
 
 
+    //To list customers as a page
     @GetMapping()
     @ResponseStatus(HttpStatus.OK)
     public ResultData<CursorResponse<CustomerResponse>> cursor(
@@ -79,6 +81,7 @@ public class CustomerController {
         return  ResultHelper.cursor(customerResponsePage);
     }
 
+    //Endpoint that filters customers by name
     @GetMapping("/filter")
     @ResponseStatus(HttpStatus.OK)
     public ResultData<List<CustomerResponse>> getCustomersByName(@RequestParam("name") String name) {
