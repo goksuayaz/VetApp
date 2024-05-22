@@ -2,6 +2,7 @@ package com.vetapp.veterinary.controller;
 
 import com.vetapp.veterinary.business.abs.IAppointmentService;
 import com.vetapp.veterinary.core.config.modelMapper.IModelMapperService;
+import com.vetapp.veterinary.core.result.Result;
 import com.vetapp.veterinary.core.result.ResultData;
 import com.vetapp.veterinary.core.utilies.ResultHelper;
 import com.vetapp.veterinary.dto.request.AppointmentSaveRequest;
@@ -90,5 +91,14 @@ public class AppointmentController {
     }
 
 
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public Result delete(@PathVariable int id){
+        this.appointmentService.delete(id);
+        return ResultHelper.Ok();
+    }
+
+
 }
+
 

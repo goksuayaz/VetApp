@@ -59,6 +59,8 @@ public class AppointmentManager implements IAppointmentService {
 
     }
 
+
+
     @Override
     public List<Appointment> getByAnimalId(Long animalId) {
         if (animalId == null || animalId <= 0){
