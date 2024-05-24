@@ -36,13 +36,10 @@ public class Animal {
     @Column(name = "animal_date_of_birth")
     private LocalDate dateOfBirth;
 
-    @Enumerated(EnumType.STRING)
+
     @Column(name = "animal_gender")
-    private Gender gender;
-    public enum Gender {
-        MALE,
-        FEMALE
-    }
+    private String gender;
+
     @ManyToOne
     @JoinColumn(name = "customer_id")
     private Customer customer;

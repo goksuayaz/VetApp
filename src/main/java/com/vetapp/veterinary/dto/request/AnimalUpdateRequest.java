@@ -27,5 +27,7 @@ public class AnimalUpdateRequest {
     @NotNull(message = "Customer id can not be empty or null")
     @Positive(message = "Customer id must be positive")
     private Long customerId;
+
+
 }
 

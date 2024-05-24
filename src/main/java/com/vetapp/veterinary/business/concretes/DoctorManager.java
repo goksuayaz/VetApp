@@ -5,6 +5,7 @@ import com.vetapp.veterinary.core.config.exception.NotFoundException;
 import com.vetapp.veterinary.core.utilies.Msg;
 import com.vetapp.veterinary.entity.Doctor;
 import com.vetapp.veterinary.repository.DoctorRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -54,6 +55,12 @@ public class DoctorManager implements IDoctorService {
         Doctor doctor=this.get(id);
         this.doctorRepository.delete(doctor);
         return true;
+    }
+
+    public Doctor findDoctorId(Long id) {
+        // Find the doctor by ID in the repository
+        return this.doctorRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Doctor with ID " + id + " not found."));
     }
 }
 

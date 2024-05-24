@@ -58,8 +58,8 @@ public class AnimalController {
     public ResultData<AnimalResponse> save(@Valid @RequestBody AnimalSaveRequest animalSaveRequest ){
         Animal saveAnimal = this.modelMapper.forRequest().map(animalSaveRequest,Animal.class);
 
-        Customer customer =this.customerService.get(animalSaveRequest.getCustomerId());
-        saveAnimal.setCustomer(customer);
+        //Customer customer =this.customerService.get(animalSaveRequest.getCustomerId());
+        //saveAnimal.setCustomer(customer);
 
         this.animalService.save(saveAnimal);
         return ResultHelper.created(this.modelMapper.forResponse().map(saveAnimal,AnimalResponse.class));

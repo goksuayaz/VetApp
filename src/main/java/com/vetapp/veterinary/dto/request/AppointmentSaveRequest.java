@@ -16,7 +16,6 @@ import java.time.LocalDateTime;
 public class AppointmentSaveRequest {
 
     @NotNull(message = "Appointment Date and Time can not be empty")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime appointmentDateTime;
 
     @NotNull(message = "Doctor id can not be empty or null")

@@ -21,7 +21,7 @@ public class AvailableDate {
     @Column(name = "available_date")
     private LocalDate availableDate;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "availableDate_doctor_id", referencedColumnName = "doctor_id")
     private Doctor doctor;
 
