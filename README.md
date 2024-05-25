@@ -32,10 +32,11 @@ CONTROLLER
 
 
 Running the Application
+
 Since the project is developed with Spring Boot, you can follow the steps below to run the application:
 
 Clone the source code of the project to your computer.
-Create your PostgreSQL database and update the connection information in the application.properties file.
+Create your PostgreSQL database.
 Open the project in an IDE (IntelliJ IDEA, Eclipse, etc.).
 Find the VeterinaryApplication class and run it.
 
