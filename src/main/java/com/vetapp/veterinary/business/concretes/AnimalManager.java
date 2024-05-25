@@ -60,4 +60,5 @@ public class AnimalManager implements IAnimalService {
     public List<Animal> getAnimalsByCustomerId(Long customerId) {
         return this.animalRepository.findByCustomerId(customerId);
     }
+
 }
