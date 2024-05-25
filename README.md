@@ -19,10 +19,15 @@ Swagger
 The project includes the following components:
 
 ENTITY
+
 REPOSITORY
+
 DTO / REQUEST-RESPONSE
+
 BUSINESS
+
 CORE
+
 CONTROLLER
 
 
